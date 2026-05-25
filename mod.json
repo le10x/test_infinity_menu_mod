@@ -6,9 +6,9 @@
                 "mac": "2.2081",
                 "ios": "2.2081"
         },
-	"id": "le10x.double_player_swapper",
+	"id": "le10x.gravity_flip",
 	"version": "1.0.0",
-	"name": "2P Swapper",
+	"name": "AA Gravity Flip",
 	"developer": "le10x",
 	"description": "xD.",
 	"settings": {}
