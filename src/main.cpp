@@ -1,6 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PauseLayer.hpp>
-#include <Geode/modify/GameObject.hpp>
+#include <Geode/modify/PlayerObject.hpp>
 #include <cstdlib>
 #include <ctime>
 
@@ -9,6 +9,7 @@ using namespace geode::prelude;
 bool g_suerteDecidida = false;
 bool g_noclipSecreto = false;
 
+// 1. CREACIÓN DEL BOTÓN DE SUERTE EN EL MENÚ DE PAUSA
 class $modify(MyPauseLayer, PauseLayer) {
     void customSetup() {
         PauseLayer::customSetup();
@@ -24,27 +25,29 @@ class $modify(MyPauseLayer, PauseLayer) {
     }
 
     void alPresionar(CCObject*) {
-        std::srand(static_cast<unsigned int>(std::time(nullptr))); // Semilla del azar
+        std::srand(static_cast<unsigned int>(std::time(nullptr))); // Inicializa el azar real
         g_noclipSecreto = (std::rand() % 2 == 1);
         g_suerteDecidida = true;
         FLAlertLayer::create("Destino Sellado", "El azar decidió tu suerte en secreto. <y>Averígualo jugando...</y>", "¡Ok!") -> show();
     }
 };
 
-class $modify(GameObject) {
-    // Añadimos 'GJCollideInfo*' que es requerido en Geometry Dash 2.2
-    bool collideWithPlayer(PlayerObject* player, GJCollideInfo* info) {
+// 2. INTERCEPCIÓN DIRECTA DE LA MUERTE DEL ICONO
+class $modify(MyPlayerObject, PlayerObject) {
+    void playerDestroyed(bool p0) {
         if (g_suerteDecidida) {
-            g_suerteDecidida = false; 
+            g_suerteDecidida = false; // Detiene alertas repetidas
             if (g_noclipSecreto) {
                 Notification::create("¡BENDITO POR EL AZAR! (Noclip Activo)", NotificationIcon::Success, 1.5f) -> show();
             } else {
                 Notification::create("¡EL DESTINO TE ABANDONÓ!", NotificationIcon::Error, 2.0f) -> show();
             }
         }
-        if (g_noclipSecreto) return false;
-        
-        // Pasamos ambos parámetros a la función original del juego
-        return GameObject::collideWithPlayer(player, info);
+
+        // Si la ruleta dio Noclip Secreto, bloqueamos la destrucción regresando de inmediato
+        if (g_noclipSecreto) return;
+
+        // Si no se activó la suerte, el icono explota de forma normal
+        PlayerObject::playerDestroyed(p0);
     }
 };
