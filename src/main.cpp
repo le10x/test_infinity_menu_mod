@@ -1,6 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PauseLayer.hpp>
 #include <Geode/modify/GJBaseGameLayer.hpp>
+#include <Geode/modify/PlayLayer.hpp> // Añadimos el header de PlayLayer
 #include <cstdlib> 
 #include <ctime>   
 
@@ -45,7 +46,7 @@ class $modify(MyPauseLayer, PauseLayer) {
     }
 };
 
-// 2. LÓGICA DE DETECCIÓN EN EL JUEGO
+// 2. LÓGICA DE DETECCIÓN EN EL JUEGO (Se queda en GJBaseGameLayer)
 class $modify(MySecretLogic, GJBaseGameLayer) {
     void destroyPlayer(PlayerObject* player, GameObject* object) {
         
@@ -53,11 +54,9 @@ class $modify(MySecretLogic, GJBaseGameLayer) {
         if (g_suerteDecidida) {
             
             if (g_noclipSecreto) {
-                // ¡Tuvo suerte! Mostramos una notificación rápida en la pantalla (Notification)
-                // Usamos Notification porque no pausa el juego, solo aparece arriba
+                // ¡Tuvo suerte! Mostramos una notificación rápida en la pantalla
                 Notification::create("¡BENDITO POR EL AZAR! (Noclip Activo)", NotificationIcon::Success, 1.5f)->show();
                 
-                // Desactivamos g_suerteDecidida para que no se llene la pantalla de mensajes a cada segundo
                 g_suerteDecidida = false; 
                 return; // Sobrevive
             } else {
@@ -73,9 +72,13 @@ class $modify(MySecretLogic, GJBaseGameLayer) {
             GJBaseGameLayer::destroyPlayer(player, object);
         }
     }
+};
 
+// 3. REINICIO DE VARIABLES AL MORIR (Se mueve a PlayLayer para evitar el error inline)
+class $modify(MyPlayLayer, PlayLayer) {
     void resetLevel() {
-        GJBaseGameLayer::resetLevel();
+        PlayLayer::resetLevel(); // Ejecuta el reinicio normal de PlayLayer
+        
         // Al reiniciar el nivel, limpiamos los estados para la siguiente prueba
         g_suerteDecidida = false;
         g_noclipSecreto = false;
