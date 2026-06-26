@@ -1,6 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PauseLayer.hpp>
-#include <Geode/modify/PlayerObject.hpp>
+#include <Geode/modify/PlayLayer.hpp>
 #include <cstdlib>
 #include <ctime>
 
@@ -31,8 +31,9 @@ class $modify(MyPauseLayer, PauseLayer) {
     }
 };
 
-class $modify(MyPlayerObject, PlayerObject) {
-    void playerDestroyed(bool p0) {
+class $modify(MyPlayLayer, PlayLayer) {
+    void destroyPlayer(PlayerObject* player, GameObject* object) {
+        // Se ejecuta en el instante del primer choque (sea el jugador 1 o 2)
         if (g_yesclip) {
             g_yesclip = false;
             if (g_noclip) {
@@ -42,10 +43,12 @@ class $modify(MyPlayerObject, PlayerObject) {
             }
         }
 
-        // Si el Noclip aleatorio está activado, salimos para evitar que el jugador muera
-        if (g_noclip) return;
+        // Si la ruleta dio Noclip activo, cancelamos la muerte para ambos jugadores
+        if (g_noclip) {
+            return;
+        }
 
-        // CORREGIDO: Llamamos a la función original correspondiente (playerDestroyed) en lugar de collidedWithObject
-        PlayerObject::playerDestroyed(p0);
+        // Si tocó mala suerte, dejamos que el juego destruya al jugador normalmente
+        PlayLayer::destroyPlayer(player, object);
     }
 };
