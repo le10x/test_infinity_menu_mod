@@ -1,6 +1,5 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
-#include <GeometryDash/PlayerObject.hpp>
 
 using namespace geode::prelude;
 
