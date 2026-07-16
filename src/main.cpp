@@ -1,61 +1,42 @@
 #include <Geode/Geode.hpp>
-#include <Geode/modify/LevelCell.hpp>
-#include <Geode/modify/GameLevelManager.hpp>
+#include <Geode/modify/CommentCell.hpp>
 
 using namespace geode::prelude;
 
-bool g_isGhostModeActive = false;
+// Interceptamos la clase que controla cada celda de comentario individual
+class $modify(MyCommentCell, CommentCell) {
+    
+    // Este método se ejecuta al cargar y dibujar el comentario en pantalla
+    void loadFromCell(GJComment* comment, int cellType) {
+        // 1. Dejamos que el juego ejecute su lógica original primero
+        // Aquí es donde el GD vainilla bloquea los botones ya votados o propios
+        CommentCell::loadFromCell(comment, cellType);
 
-class $modify(MyLevelCell, LevelCell) {
-    void loadCustomLevelCell() {
-        LevelCell::loadCustomLevelCell();
-
-        // Buscamos el botón original usando tanto su ID como su tipo en el árbol de nodos
-        auto getItBtn = this->m_mainLayer->getChildByID("get-it-button");
-        
-        // Creamos un menú limpio y dedicado exclusivamente para nuestro botón para que no falle el renderizado
-        auto customMenu = CCMenu::create();
-        if (!customMenu) return;
-        
-        customMenu->setPosition(0, 0);
-        customMenu->setID("ghost-menu"_spr);
-
-        auto buttonSprite = CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png");
-        if (buttonSprite) {
-            buttonSprite->setScale(0.4f); 
-
-            auto ghostButton = CCMenuItemSpriteExtra::create(
-                buttonSprite, this, menu_selector(MyLevelCell::onGhostGetIt)
-            );
-
-            // Si detecta el botón original, se posiciona exactamente a su izquierda
-            if (getItBtn) {
-                ghostButton->setPosition(getItBtn->getPositionX() - 35.0f, getItBtn->getPositionY());
-            } else {
-                // Posición manual de respaldo ajustada para pantallas de Android de 16:9 y 20:9
-                ghostButton->setPosition(this->m_mainLayer->getContentSize().width - 95.0f, 28.0f);
-            }
-
-            ghostButton->setID("ghost-get-button"_spr);
-            customMenu->addChild(ghostButton);
+        // 2. Rompemos las restricciones del botón de Like
+        if (this->m_likeBtn) {
+            // Forzamos el botón a estar SIEMPRE activo (true)
+            // Esto reactiva los ya votados y tus comentarios propios al instante
+            this->m_likeBtn->setEnabled(true);
             
-            // Añadimos el menú directamente sobre la capa principal de la celda con máxima prioridad visual (Z-Order)
-            this->m_mainLayer->addChild(customMenu, 100);
+            // Nos aseguramos de que el botón mantenga su opacidad al 100%
+            // El juego original los vuelve semitransparentes al bloquearlos
+            this->m_likeBtn->setOpacity(255);
+            this->m_likeBtn->setColor({255, 255, 255});
         }
     }
 
-    void onGhostGetIt(CCObject* sender) {
-        g_isGhostModeActive = true;
-        GameLevelManager::sharedState()->downloadLevel(this->m_level->m_levelID.value(), false, 0);
-    }
-};
-
-class $modify(GhostModeNetwork, GameLevelManager) {
-    void downloadLevel(int levelID, bool isGauntlet, int dailyID) {
-        if (g_isGhostModeActive) {
-            g_isGhostModeActive = false;
-            return; 
+    // Interceptamos la acción que ocurre cuando pulsas el botón
+    void onLike(cocos2d::CCObject* sender) {
+        // Envia la petición HTTP original (likeGJItem21.php) al servidor
+        CommentCell::onLike(sender);
+        
+        // El juego nativo intentará bloquear el botón inmediatamente tras el clic.
+        // Volvemos a forzar su activación para permitir clics infinitos consecutivos.
+        if (this->m_likeBtn) {
+            this->m_likeBtn->setEnabled(true);
+            this->m_likeBtn->setOpacity(255);
         }
-        GameLevelManager::downloadLevel(levelID, isGauntlet, dailyID);
+        
+        log::info("Petición de interacción enviada sin restricciones locales.");
     }
 };
