@@ -28,7 +28,7 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
     void onAlternativeLike(CCObject* sender) {
         // Enviar el LIKE real directamente saltándose el bloqueo del juego
         if (m_level && GameLevelManager::sharedState()) {
-            GameLevelManager::sharedState()->likeItem(GJLevelType::Saved, m_level->m_levelID, true);
+            GameLevelManager::sharedState()->likeItem(GJLevelType::Saved, m_level->m_levelID, true, 0);
             FLAlertLayer::create("Geode", "¡Like enviado!", "OK")->show();
         }
     }
