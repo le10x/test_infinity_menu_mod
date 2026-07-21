@@ -6,35 +6,35 @@
         "mac": "2.2081",
         "ios": "2.2081"
     },
-    "id": "le10x.alternative_likes",
+    "id": "le10x.infinity.menu",
     "version": "1.0.0",
-    "name": "Alternative Likes",
+    "name": "Infinity Menu",
     "developer": "le10x",
-    "description": "Alternative buttons",
+    "description": "descripcion",
     "settings": {
-        "cantidad-estrellas": {
-            "name": "Cantidad de Estrellas",
-            "description": "Elige cuántas estrellas enviará tu botón alternativo (1-10)",
+        "rate-star": {
+            "name": "Rate Star",
+            "description": "Elige la cantidad fija de estrellas que enviara el acceso directo. (1-10)",
             "type": "int",
             "default": 10,
-            "min": 1,
-            "max": 10
+            "min": 0,
+            "max": 11
         },
-        "mostrar-like": {
-            "name": "Mostrar Botón de Like",
-            "description": "Activa o desactiva el botón alternativo de Like verde",
+        "show-like": {
+            "name": "Like Shortcut",
+            "description": "Activa o desactiva el acceso directo de Like.",
             "type": "bool",
             "default": true
         },
         "mostrar-dislike": {
-            "name": "Mostrar Botón de Dislike",
-            "description": "Activa o desactiva el botón alternativo de Dislike rojo",
+            "name": "Dislike Shortcut",
+            "description": "Activa o desactiva el acceso directo de Dislike.",
             "type": "bool",
             "default": true
         },
-        "mostrar-rate": {
-            "name": "Mostrar Botón de Rate",
-            "description": "Activa o desactiva el botón alternativo de Rate de estrella",
+        "show-rate": {
+            "name": "Show Rate Stars Shortcut",
+            "description": "Activa o desactiva el acceso directo de Rate Stars.",
             "type": "bool",
             "default": true
         }
