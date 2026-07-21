@@ -7,9 +7,8 @@ class $modify(LikeLayer, LevelInfoLayer) {
     bool init(GJGameLevel* level, bool p1) {
         if (!LevelInfoLayer::init(level, p1)) return false;
 
-        // Comprobar si el usuario activó este botón en la configuración
-        bool habilitado = Mod::get()->getSettingValue<bool>("mostrar-like");
-        if (!habilitado) return true;
+        bool enabled = Mod::get()->getSettingValue<bool>("show-like");
+        if (!enabled) return true;
 
         if (auto menu = this->getChildByID("left-side-menu")) {
             auto btnSprite = CCSprite::createWithSpriteFrameName("GJ_likeBtn_001.png");
@@ -18,10 +17,10 @@ class $modify(LikeLayer, LevelInfoLayer) {
                 auto myButton = CCMenuItemSpriteExtra::create(
                     btnSprite,
                     this,
-                    menu_selector(LikeLayer::onAlternativeLike)
+                    menu_selector(LikeLayer::onShortcutLike)
                 );
 
-                myButton->setID("alt-like-button");
+                myButton->setID("shortcut-like-button");
                 menu->addChild(myButton);
                 menu->updateLayout();
             }
@@ -29,7 +28,7 @@ class $modify(LikeLayer, LevelInfoLayer) {
         return true;
     }
 
-    void onAlternativeLike(CCObject* sender) {
+    void onShortcutLike(CCObject* sender) {
         if (m_level && GameLevelManager::sharedState()) {
             GameLevelManager::sharedState()->likeItem(
                 static_cast<LikeItemType>(1), 
@@ -37,7 +36,7 @@ class $modify(LikeLayer, LevelInfoLayer) {
                 true, 
                 0
             );
-            FLAlertLayer::create("Geode", "¡Like enviado!", "OK")->show();
+            FLAlertLayer::create("Geode", "Like submitted!", "OK")->show();
         }
     }
 };
