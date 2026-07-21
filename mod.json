@@ -22,6 +22,26 @@
             "type": "bool",
             "default": false
         },
+        "pause-menu-header": {
+            "type": "title",
+            "name": "Shortcuts Pause Menu"
+        },
+        "leaderboard-pausemenu": {
+            "name": "Leaderboard In Pause Menu",
+            "description": "Muestra un boton en el menu de pausa para abrir los leaderboards del nivel.",
+            "type": "bool",
+            "default": true
+        },
+        "leaderboard-position": {
+            "name": "Posicion del Boton",
+            "description": "Elige en que menu lateral se colocara el boton de leaderboards.",
+            "type": "string",
+            "one-of": [
+                "Left",
+                "Right"
+            ],
+            "default": "Right"
+        },
         "shortcuts-header": {
             "type": "title",
             "name": "Shortcuts"
