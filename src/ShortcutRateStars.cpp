@@ -22,7 +22,7 @@ class $modify(GDRateStarsLayer, LevelInfoLayer) {
                 auto myButton = CCMenuItemSpriteExtra::create(
                     btnSprite,
                     this,
-                    menu_selector(RateStarsLayer::onShortcutRateStars)
+                    menu_selector(GDRateStarsLayer::onShortcutRateStars)
                 );
 
                 myButton->setID("shortcut-rate-stars-button");
